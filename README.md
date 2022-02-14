@@ -1,193 +1,173 @@
-# Operacion Fuego de Quasar
-## Para el desarrollo de la API se utilizó:
+# Settle Challenge
+## For the development of the API was used:
 
 - NodeJS
-- Express 
+- HapiJs
 - MongoDB
-- Algunas dependencias de npm
 
-## Levantar la API Localmente
+## Start Api locally
 
-- _Accede a la carpeta_
+- _Access the folder_
 
 ```
-cd operacion-fq-ml
+cd settle-challenge
 ```
 
-- _Renombra el archivo .env.example a .env y configurarlo con los datos del servidor_
+- _Rename the .env.example file to .env and configure it with the server data_
  ```
-MONGODB_URI=mongodb+srv://TuBdURL
-SECRET=ClaveDeSeguridadToken
-SATELLITE_ONE=kenobi
-SATELLITE_TWO=skywalker
-SATELLITE_THREE=sato
+MONGODB_URI=mongodb+srv://DBURL
+NODE_ENV=dev
+VERSION=0.0.1
+NAME_EXCHANGE=SETTLENETWORKS
+FEE_EXCHANGUE=0.03
+API_FIXER_URL=http://data.fixer.io/
+API_FIXER_KEY=
+API_FIXER_FORMAT=1
 ```
 
-- _Instala las dependencias_
+- _Install the dependencies_
 
 ```
 npm install
 ```
 
-- _Corré el proyecto en desarrollo_
+- _Run the project in development_
 
 ```
 npm run dev
 ```
 
-- _Corré el proyecto en productivo_
-
-```
-npm start
-```
-
-- _Corrér Test_
+- _Run Test_
 
 ```
 npm run test
 ```
 
-# API Productiva
+### Health api check
+-  _GET -> /ping_
 
-- _Ruta_
+Example response:
+```
+pong
+```
 
-```
-https://meli-operacionfdq.herokuapp.com/
-```
-- _Api hosteada en Heroku, y la base de datos en MongoDB Atlas_
+### Register a new rate pair
+-  _POST -> /rates_
 
-## Crear un usuario o logearse
-- _Para realizar las pegadas necesitas registrarte o logearte ya que utiliza tokens y roles_
-### Registro de usuario 
--  _POST -> /api/auth/signup_
-Roles actuales "tripulante" y "general"
-```
-https://meli-operacionfdq.herokuapp.com/api/auth/signup
-```
-Ejemplo request:
+Example request:
 ```
 {
-	"username": "user",
-	"email": "email@email.com",
-	"password":"password",
-    	"roles": ["general"]
+	"pair": "EURUSD", (required)
+	"fee": 3,
 }
 ```
-Ejemplo response:
+Example response:
 ```
 {
-    "message": "User created successfully",
-    "token": "TOKEN"
-}
-```
-
-### Login de usuario
--  _POST -> /api/auth/signin_
-```
-https://meli-operacionfdq.herokuapp.com/api/auth/signin
-```
-Ejemplo request:
-```
-{
- "email":"user@email.com",
- "password":"password"
-}
-```
-Ejemplo response:
-```
-{
-    "message": "Welcome user",
-    "token": "TOKEN"
-}
-```
-
---------
-### Rutas del ejercicio
-### Aclaracion
-- Solo pueden acceder a esta informacion si tiene el rol de "general"
-- Se debe colocar en los headers la siguiente informacion
-```
-"ml-access-token": "TOKEN"
-"Content-Type": "application/json"
-```
-
-### TopSecret
--  _POST -> /api/topsecret/_
-```
-https://meli-operacionfdq.herokuapp.com/api/topsecret/
-```
-Ejemplo request:
-```
-{
-  "satellites": [
-    {
-      "name": "kenobi",
-      "distance": 100.0,
-      "message": ["","este","es","un","mensaje"]
-    },
-    {
-      "name": "skywalker",
-      "distance": 115.5,
-      "message": ["este","","un","mensaje"]
-    },
-    {
-      "name": "sato",
-      "distance": 142.7,
-      "message": ["","","es","","mensaje"]
+     "message": "Successfully Created Pair",
+    "data": {
+        "pair": "EURCAD",
+        "originalRate": 1.445448,
+        "fee": 0.03,
+        "feeAmount": 0.044704577319587636,
+        "rateWithMarkUpFee": 1.4901525773195876,
+        "_id": "620ab535b8ee9dc5c3cee399",
+        "__v": 0
     }
-  ]
 }
 ```
-Ejemplo response: (RESPONSE CODE 200)
+
+### Modify a rate pair
+-  _PUT -> /rates_
+
+Example request:
 ```
 {
-    "position": {
-        "x": -16.2,
-        "y": -58.2
+	"pair": "EURUSD", (required)
+	"fee": 3, 
+}
+```
+Example response:
+```
+{
+    "message": "Successfully modify Pair",
+    "data": {
+        "_id": "620ab153766c63815fcfb13c",
+        "pair": "EURUSD",
+        "originalRate": 1.129261,
+        "fee": 0.03,
+        "feeAmount": 0.034925597938144336,
+        "rateWithMarkUpFee": 1.1641865979381445,
+        "__v": 0
+    }
+}
+```
+
+### Get all rates
+-  _GET -> /rates_
+
+Example response:
+```
+[
+    {
+        "_id": "620ab7ead12f12c937b38fac",
+        "pair": "EURUSD",
+        "originalRate": 1.13494,
+        "fee": 0.03,
+        "feeAmount": 0.035101237113402066,
+        "rateWithMarkUpFee": 1.1700412371134021,
+        "__v": 0
     },
-    "message": "este es un mensaje"
-}
-```
-
-### TopSecret Split
--  _POST -> /api/topsecret_split/{satellite_name}_
--  Satelites en servicio: kenobi, skywalker, sato
-```
-https://meli-operacionfdq.herokuapp.com/api/topsecret_split/kenobi
-```
-
-Ejemplo request:
-```
-{
-    "distance": 100.0,
-    "message": [ "este", "", "", "mensaje", "" ]
-}
-```
-Ejemplo response:
-```
-{
-    "message": "Satellite modify successfully"
-}
-```
-
-### TopSecret Split
--  _GET -> /api/topsecret_split/_
--  Deben estar los 3 satellites con la informacion cargada correctamente, sino respondera _"No hay suficiente informacion"_
-```
-https://meli-operacionfdq.herokuapp.com/api/topsecret_split/
-```
-Ejemplo response:
-```
-{
-    "position": {
-        "x": -16.2,
-        "y": -58.2
+    {
+        "_id": "620ab7ead12f12c937b38fad",
+        "pair": "EURARS",
+        "originalRate": 120.803029,
+        "fee": 0.03,
+        "feeAmount": 3.736176154639175,
+        "rateWithMarkUpFee": 124.53920515463918,
+        "__v": 0
     },
-    "message": "este es un mensaje secreto"
-}
+    {
+        "_id": "620ab7ead12f12c937b38fae",
+        "pair": "USDARS",
+        "originalRate": 106.44001356899923,
+        "fee": 0.03,
+        "feeAmount": 3.2919591825463677,
+        "rateWithMarkUpFee": 109.7319727515456,
+        "__v": 0
+    },
+    {
+        "_id": "620ab7ead12f12c937b38faf",
+        "pair": "EURBRL",
+        "originalRate": 5.962951,
+        "fee": 0.03,
+        "feeAmount": 0.18442116494845362,
+        "rateWithMarkUpFee": 6.147372164948454,
+        "__v": 0
+    },
+    {
+        "_id": "620ab7ead12f12c937b38fb0",
+        "pair": "USDBRL",
+        "originalRate": 5.253979064972597,
+        "fee": 0.03,
+        "feeAmount": 0.16249419788575042,
+        "rateWithMarkUpFee": 5.416473262858347,
+        "__v": 0
+    },
+    {
+        "_id": "620ab7ead12f12c937b38fb1",
+        "pair": "BRLARS",
+        "originalRate": 20.258933705811096,
+        "fee": 0.03,
+        "feeAmount": 0.626564959973539,
+        "rateWithMarkUpFee": 20.885498665784635,
+        "__v": 0
+    }
+]
 ```
 -----------
-### Mas informacion del proyecto
+### Other info
 
-- Estructura de la API: (https://github.com/alexek-r/operacion-fq-ml/blob/main/doc/API.md)
+- Added swagger the endpoint is "/documentation".
+- Added postman collection in dir -> doc.
 
