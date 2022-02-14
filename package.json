@@ -4,16 +4,27 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/app.js --exec babel-node"
+    "build": "babel src --out-dir build",
+    "start": "node build/index.js",
+    "postinstall": "npm run build",
+    "dev": "nodemon src/index.js --exec babel-node",
+    "test": "./node_modules/.bin/mocha --timeout 25000 --recursive --require @babel/register"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@hapi/hapi": "^20.2.1",
+    "@hapi/inert": "^6.0.5",
     "@hapi/joi": "^17.1.1",
+    "@hapi/vision": "^6.1.0",
+    "@types/hapi__joi": "^17.1.8",
     "axios": "^0.25.0",
-    "mongoose": "^6.2.1"
+    "dotenv": "^16.0.0",
+    "hapi-swagger": "^14.2.5",
+    "joi": "^17.6.0",
+    "mongoose": "^6.2.1",
+    "require-hapiroutes": "^1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.0",
